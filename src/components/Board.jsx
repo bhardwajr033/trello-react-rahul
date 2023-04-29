@@ -1,7 +1,12 @@
 import { Card, CardHeader, Heading } from "@chakra-ui/react";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-function Board({ boardname, backgroundImg, openBoard}) {
+function Board({ boardname, backgroundImg }) {
+  const navigate = useNavigate();
+  const openBoard = (boardId) => {
+    navigate(`/board`);
+  };
   return (
     <Card
       cursor="pointer"

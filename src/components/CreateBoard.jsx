@@ -1,3 +1,4 @@
+import { AddIcon } from "@chakra-ui/icons";
 import {
   Card,
   CardHeader,
@@ -38,9 +39,14 @@ function CreateBoard({ createBoard }) {
         background="lightgray"
       >
         <Center height="100%">
-          <CardHeader>
-            <Heading size="md">Create new board</Heading>
-          </CardHeader>
+          <Flex flexDirection="column">
+            <CardHeader>
+              <Heading size="md">Create new board</Heading>
+            </CardHeader>
+            <Center>
+              <AddIcon />
+            </Center>
+          </Flex>
         </Center>
       </Card>
       <Modal isOpen={isOpen} onClose={onClose} size={{ base: "sm", md: "lg" }}>
