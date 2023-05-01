@@ -1,21 +1,23 @@
 import { Button, Text, Box, Flex, Image } from "@chakra-ui/react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useParams } from "react-router-dom";
 
 export const NavBar = () => {
+  const boardId = useParams().id;
+
   return (
     <>
       <Box
         as="nav"
         bg="bg-surface"
-        boxShadow="md"
+        boxShadow="lg"
         px="1rem"
         py={{ base: "0.5rem", md: "1rem" }}
-        background="#00DDFF"
+        backgroundColor={boardId ? "rgba(0,0,0, 0.1)" : "#00DDFF"}
         position="fixed"
         top="0"
         left="0"
         width="100%"
-        zIndex="1"
+        zIndex="2"
       >
         <Flex justify="space-between">
           <Link to="/">

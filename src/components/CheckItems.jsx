@@ -7,7 +7,7 @@ function CheckBox(props) {
       <Checkbox spacing="1rem" size="md" width="100%">
         {props.checkBoxName}
       </Checkbox>
-      <DeleteIcon />
+      <DeleteIcon onClick={()=>props.deleteCheckItem(props.checkItemID)}/>
     </Flex>
   );
 }

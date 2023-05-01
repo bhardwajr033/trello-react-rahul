@@ -14,14 +14,30 @@ import {
   PopoverArrow,
   PopoverCloseButton,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useRef, useState } from "react";
 
 function AddAnotherCard(props) {
-  let newCardName = `new ${props.addtype}`;
+  const [isOpen, setIsOpen] = useState(false);
+
+  function handleClick() {
+    setIsOpen(!isOpen);
+  }
+
+  function handleClose() {
+    setIsOpen(false);
+  }
+
+  const ref = useRef(null);
+
   return (
-    <Popover>
+    <Popover isOpen={isOpen} onClose={handleClose}>
       <PopoverTrigger>
-        <Card boxShadow="lg" width={props.width} height="fit-content">
+        <Card
+          onClick={handleClick}
+          boxShadow="lg"
+          width={props.width}
+          height="fit-content"
+        >
           <CardHeader>
             <Heading size="md">
               <AddIcon marginRight="0.5rem" /> Add {props.addtype}
@@ -35,17 +51,20 @@ function AddAnotherCard(props) {
         <PopoverHeader>Add New {props.addtype}</PopoverHeader>
         <PopoverBody>
           <Input
+            ref={ref}
+            id="inputValue"
             placeholder="List name"
             width="100%"
-            onChange={(event) => {
-              newCardName = !event.target.value
-                ? "new list"
-                : event.target.value;
-            }}
           />
         </PopoverBody>
         <PopoverFooter>
-          <Button colorScheme="blue" onClick={() => props.addCard(newCardName)}>
+          <Button
+            colorScheme="blue"
+            onClick={(event) => {
+              props.addCard(ref.current.value);
+              handleClose(event);
+            }}
+          >
             Add
           </Button>
         </PopoverFooter>

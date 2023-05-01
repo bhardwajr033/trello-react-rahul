@@ -2,10 +2,10 @@ import { Card, CardHeader, Heading } from "@chakra-ui/react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function Board({ boardname, backgroundImg }) {
+function Board(props) {
   const navigate = useNavigate();
-  const openBoard = (boardId) => {
-    navigate(`/board`);
+  const openBoard = (event) => {
+    navigate(`/board/${props.boardId}`);
   };
   return (
     <Card
@@ -14,11 +14,11 @@ function Board({ boardname, backgroundImg }) {
       boxShadow="lg"
       height="10rem"
       width={{ base: "100%", md: "24%" }}
-      backgroundImage={backgroundImg}
+      backgroundImage={props.backgroundImg}
     >
       <CardHeader>
         <Heading color="white" size="md">
-          {boardname}
+          {props.boardname}
         </Heading>
       </CardHeader>
     </Card>

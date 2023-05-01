@@ -22,7 +22,7 @@ import React from "react";
 function CreateBoard({ createBoard }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   let newBoardName = "new Board";
-  let newBoardBackground = "blue";
+  let newBoardBackground = "gradient-snow";
   const createNewBoard = () => {
     onClose();
     createBoard(newBoardName, newBoardBackground);
@@ -63,23 +63,20 @@ function CreateBoard({ createBoard }) {
                 }}
               />
               <Select
-                placeholder="background image"
+                placeholder="Background"
                 onChange={(event) => {
                   newBoardBackground = event.target.value;
                 }}
               >
-                <option value="light blue">light blue</option>
-                <option value="blue">blue</option>
-                <option value="voilet">voilet</option>
+                <option value="gradient-snow">gradient snow</option>
+                <option value="gradient-peach">gradient peach</option>
+                <option value="gradient-earth">gradient earth</option>
               </Select>
             </Flex>
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="blue" mr={3} onClick={createNewBoard}>
               Create
-            </Button>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Close
             </Button>
           </ModalFooter>
         </ModalContent>

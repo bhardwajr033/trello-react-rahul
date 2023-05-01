@@ -9,39 +9,71 @@ import {
   Accordion,
   AccordionItem,
   AccordionButton,
+  Button,
+  ModalFooter,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CheckList from "../components/CheckList";
 import AddAnotherCard from "../components/AddAnotherCard";
+import { deleteCard } from "../services/cardServices";
+import {
+  createCheckList,
+  deleteCheckList,
+  getCheckListsInCard,
+} from "../services/checkListServices";
 
-function CardModal({ isOpen, onOpen, onClose }) {
-  const [checkListItems, setCheckListItems] = useState([
-    { checklistName: "checklist 1" },
-    { checklistName: "checklist 1" },
-    { checklistName: "checklist 1" },
-    { checklistName: "checklist 1" },
-  ]);
+function CardModal(props) {
+  const { isOpen, onOpen, onClose } = props;
 
-  const handleDeleteCheckList = (event) => {
-    console.log(event);
+  const [checkListDetails, setCheckListDetails] = useState([]);
+
+  useEffect(() => {
+    loadCheckList();
+  }, []);
+
+  async function loadCheckList() {
+    const res = await getCheckListsInCard(props.cardID);
+    if (!res.error) {
+      setCheckListDetails(res);
+    }
+  }
+
+  const handleAddCheckList = async (checklistName) => {
+    const resStatus = await createCheckList(props.cardID, checklistName);
+    if (resStatus === 200) {
+      loadCheckList();
+    }
   };
 
-  const checkLists = checkListItems.map((item, index) => {
+  const handleDeleteCheckList = async (checkListID) => {
+    const resStatus = await deleteCheckList(checkListID);
+    if (resStatus === 200) {
+      loadCheckList();
+    }
+  };
+
+  async function handledeleteCard() {
+    const resStatus = await deleteCard(props.cardID);
+    if (resStatus === 200) {
+      props.isUpdate;
+    } else {
+      console.log("failed");
+    }
+  }
+
+  const checkLists = checkListDetails.map((item, index) => {
     return (
       <AccordionItem key={index} gap="1rem">
         <AccordionButton>
           <CheckList
-            checklistName={item.checklistName}
+            checkListID={item.checkListId}
+            checklistName={item.checkListName}
             deleteCheckList={handleDeleteCheckList}
           />
         </AccordionButton>
       </AccordionItem>
     );
   });
-
-  const handleAddCard = (checklistName) => {
-    setCheckListItems([{ checklistName: checklistName }, ...checkListItems]);
-  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -54,11 +86,22 @@ function CardModal({ isOpen, onOpen, onClose }) {
             <AddAnotherCard
               width="100%"
               addtype="Checklist"
-              addCard={handleAddCard}
+              addCard={handleAddCheckList}
             />
             <Accordion>{checkLists}</Accordion>
           </Flex>
         </ModalBody>
+        <ModalFooter>
+          <Button
+            colorScheme="blue"
+            onClick={(event) => {
+              onClose(event);
+              handledeleteCard();
+            }}
+          >
+            Delete Card
+          </Button>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );

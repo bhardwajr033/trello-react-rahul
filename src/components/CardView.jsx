@@ -1,12 +1,22 @@
-import { Card, CardHeader, Heading } from "@chakra-ui/react";
+import { Card, CardHeader, Heading, useDisclosure } from "@chakra-ui/react";
 import React from "react";
+import CardModal from "../containers/CardModal";
 
 function CardView(props) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
-    <Card boxShadow="lg" width="100%" onClick={props.onOpen} cursor="pointer">
+    <Card boxShadow="lg" width="100%" onClick={onOpen} cursor="pointer">
       <CardHeader>
         <Heading size="md">{props.cardName}</Heading>
       </CardHeader>
+      <CardModal
+        cardID={props.cardId}
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onClose={onClose}
+        isUpdate={props.isUpdate}
+      />
     </Card>
   );
 }
