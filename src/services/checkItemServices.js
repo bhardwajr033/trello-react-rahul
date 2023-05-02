@@ -14,6 +14,7 @@ export async function getCheckItemsInCheckList(checkListId) {
       acc.push({
         checkItemName: checkitem.name,
         checkItemId: checkitem.id,
+        state : checkitem.state
       });
       return acc;
     }, []);
@@ -43,6 +44,27 @@ export async function deleteCheckItem(checkListId, checkItemId) {
   try {
     const res = await axios.delete(
       `${baseURL}/1/checklists/${checkListId}/checkItems/${checkItemId}?key=${key}&token=${token}`
+    );
+    return res.status;
+  } catch (err) {
+    return 500;
+  }
+}
+
+export async function checkUncheckCheckItem(
+  cardID,
+  checkListId,
+  checkItemId,
+  state
+) {
+  try {
+    const res = await axios.put(
+      `${baseURL}/1/cards/${cardID}/checklist/${checkListId}/checkItem/${checkItemId}`,
+      {
+        state: state,
+        key: key,
+        token: token,
+      }
     );
     return res.status;
   } catch (err) {

@@ -1,15 +1,28 @@
 import { CheckIcon, DeleteIcon } from "@chakra-ui/icons";
-import { AccordionPanel, Flex, Heading, Input } from "@chakra-ui/react";
+import {
+  AccordionPanel,
+  Button,
+  Flex,
+  Heading,
+  Input,
+  Progress,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import CheckItem from "./CheckItems";
 import {
   getCheckItemsInCheckList,
   createCheckItem,
   deleteCheckItem,
+  checkUncheckCheckItem,
 } from "../services/checkItemServices";
+import { Toast } from "./Toast";
 
 function CheckList(props) {
   const [checkItemDetails, setCheckItemDetails] = useState([]);
+
+  const toast = useToast();
 
   useEffect(() => {
     loadCheckItems();
@@ -19,6 +32,8 @@ function CheckList(props) {
     const res = await getCheckItemsInCheckList(props.checkListID);
     if (!res.error) {
       setCheckItemDetails(res);
+    } else {
+      toast(Toast("Failed", "error", "Error while loading"));
     }
   }
 
@@ -26,6 +41,9 @@ function CheckList(props) {
     const resStatus = await createCheckItem(props.checkListID, checkItemName);
     if (resStatus === 200) {
       loadCheckItems();
+      toast(Toast("Success", "success", `Created ${checkItemName} CheckItem`));
+    } else {
+      toast(Toast("Failed", "error", "Error while Creating CheckItem"));
     }
   };
 
@@ -33,6 +51,30 @@ function CheckList(props) {
     const resStatus = await deleteCheckItem(props.checkListID, checkItemID);
     if (resStatus === 200) {
       loadCheckItems();
+      toast(Toast("Success", "success", `Deleted  CheckItem`));
+    } else {
+      toast(Toast("Failed", "error", "Error while Deleting CheckItem"));
+    }
+  };
+
+  const handleCheckUncheck = async (checkItemID, stateBoolean) => {
+    const resStatus = await checkUncheckCheckItem(
+      props.cardID,
+      props.checkListID,
+      checkItemID,
+      stateBoolean ? "incomplete" : "complete"
+    );
+    if (resStatus === 200) {
+      loadCheckItems();
+      toast(
+        Toast(
+          "Success",
+          "success",
+          `${stateBoolean ? "Unchecked" : "Checked"} CheckItem`
+        )
+      );
+    } else {
+      toast(Toast("Failed", "error", "Error while updating CheckItem"));
     }
   };
 
@@ -43,9 +85,25 @@ function CheckList(props) {
         checkBoxName={item.checkItemName}
         checkItemID={item.checkItemId}
         deleteCheckItem={handleDeleteCheckItem}
+        state={item.state}
+        handleCheckUncheck={handleCheckUncheck}
       />
     );
   });
+
+  let progressValue = 0;
+  if (checkItemDetails.length !== 0) {
+    progressValue = Math.round(
+      (checkItemDetails.reduce((acc, item) => {
+        if (item.state === "complete") {
+          acc = acc + 1;
+        }
+        return acc;
+      }, 0) /
+        checkItemDetails.length) *
+        100
+    );
+  }
 
   const CheckItemRef = useRef(null);
 
@@ -63,7 +121,23 @@ function CheckList(props) {
           <Flex flexDirection="row" gap="1rem">
             <Input ref={CheckItemRef} placeholder="Add Checkitem" />
             <CheckIcon
-              onClick={() => handleAddCheckItem(CheckItemRef.current.value)}
+              marginTop="0.5rem"
+              onClick={() => {
+                handleAddCheckItem(
+                  CheckItemRef.current.value ? CheckItemRef.current.value : ""
+                );
+                CheckItemRef.current.value = "";
+              }}
+            />
+          </Flex>
+          <Flex flexDirection="row" gap="1rem">
+            <Text>{progressValue.toString() + "%"}</Text>
+            <Progress
+              marginTop="0.3rem"
+              size="md"
+              borderRadius="10px"
+              width="100%"
+              value={progressValue}
             />
           </Flex>
           {checkitems}

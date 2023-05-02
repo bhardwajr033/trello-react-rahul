@@ -11,6 +11,7 @@ import {
   AccordionButton,
   Button,
   ModalFooter,
+  useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import CheckList from "../components/CheckList";
@@ -21,11 +22,14 @@ import {
   deleteCheckList,
   getCheckListsInCard,
 } from "../services/checkListServices";
+import { Toast } from "../components/Toast";
 
 function CardModal(props) {
   const { isOpen, onOpen, onClose } = props;
 
   const [checkListDetails, setCheckListDetails] = useState([]);
+
+  const toast = useToast();
 
   useEffect(() => {
     loadCheckList();
@@ -36,12 +40,18 @@ function CardModal(props) {
     if (!res.error) {
       setCheckListDetails(res);
     }
+    else{
+      toast(Toast("Failed", "error", "Error while loading"));
+    }
   }
 
   const handleAddCheckList = async (checklistName) => {
     const resStatus = await createCheckList(props.cardID, checklistName);
     if (resStatus === 200) {
       loadCheckList();
+      toast(Toast("Success", "success", `Created ${checklistName} Checklist`));
+    } else {
+      toast(Toast("Failed", "error", "Error while Creating Checklist"));
     }
   };
 
@@ -49,6 +59,9 @@ function CardModal(props) {
     const resStatus = await deleteCheckList(checkListID);
     if (resStatus === 200) {
       loadCheckList();
+      toast(Toast("Success", "success", `Deleted  Checklist`));
+    } else {
+      toast(Toast("Failed", "error", "Error while Deleting Checklist"));
     }
   };
 
@@ -56,8 +69,9 @@ function CardModal(props) {
     const resStatus = await deleteCard(props.cardID);
     if (resStatus === 200) {
       props.isUpdate();
+      toast(Toast("Success", "success", `Deleted  Card`));
     } else {
-      console.log("failed");
+      toast(Toast("Failed", "error", "Error while Deleting Card"));
     }
   }
 
@@ -66,6 +80,7 @@ function CardModal(props) {
       <AccordionItem key={index} gap="1rem">
         <AccordionButton>
           <CheckList
+            cardID = {props.cardID}
             checkListID={item.checkListId}
             checklistName={item.checkListName}
             deleteCheckList={handleDeleteCheckList}
@@ -78,7 +93,7 @@ function CardModal(props) {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent background="#d0bdf4">
         <ModalHeader>Card Name</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -88,7 +103,7 @@ function CardModal(props) {
               addtype="Checklist"
               addCard={handleAddCheckList}
             />
-            <Accordion>{checkLists}</Accordion>
+            <Accordion background="#9df9ef">{checkLists}</Accordion>
           </Flex>
         </ModalBody>
         <ModalFooter>

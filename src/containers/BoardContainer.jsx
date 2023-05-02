@@ -21,6 +21,7 @@ function BoardContainer() {
   async function getBoardDetails() {
     const boardData = await getBoards();
     if (boardData.error) {
+      toast(Toast("Failed", "error", "Error while loading"));
       return;
     }
     setBoardDetails(boardData);

@@ -29,6 +29,7 @@ function BoardPage() {
   async function loadBoardDetails() {
     const boardDetails = await getBoardDetails(boardId);
     if (boardDetails.error) {
+      toast(Toast("Failed", "error", "Error while loading"));
       return;
     }
     setBoardDetails({
@@ -40,6 +41,7 @@ function BoardPage() {
   async function loadLists() {
     const ListData = await getLists(boardId);
     if (ListData.error) {
+      toast(Toast("Failed", "error", "Error while loading"));
       return;
     }
     setListItems(ListData);
@@ -59,7 +61,7 @@ function BoardPage() {
     const resStatus = await deleteList(listId);
     if (resStatus === 200) {
       loadLists();
-      toast(Toast("Success", "success", `Deleted ${listName} List`));
+      toast(Toast("Success", "success", `Deleted List`));
     } else {
       toast(Toast("Failed", "error", "Error while Deleting"));
     }
@@ -105,7 +107,7 @@ function BoardPage() {
         flexDirection={{ base: "column", md: "row" }}
         gap="2rem"
         p="2rem"
-        width="fit-content"
+        width={{ base: "100%", md: "fit-content" }}
         paddingTop="9rem"
       >
         {lists}
