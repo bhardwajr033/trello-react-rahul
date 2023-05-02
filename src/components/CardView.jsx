@@ -11,6 +11,7 @@ function CardView(props) {
         <Heading size="md">{props.cardName}</Heading>
       </CardHeader>
       <CardModal
+        cardName = {props.cardName}
         cardID={props.cardId}
         isOpen={isOpen}
         onOpen={onOpen}

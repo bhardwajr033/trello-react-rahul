@@ -1,9 +1,6 @@
-import { AddIcon } from "@chakra-ui/icons";
+import {  EditIcon } from "@chakra-ui/icons";
 import {
   Button,
-  Card,
-  CardHeader,
-  Heading,
   Input,
   PopoverFooter,
   Popover,
@@ -16,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useRef, useState } from "react";
 
-function AddAnotherCard(props) {
+function UpdateCard(props) {
   const [isOpen, setIsOpen] = useState(false);
 
   function handleClick() {
@@ -28,33 +25,24 @@ function AddAnotherCard(props) {
   }
 
   const ref = useRef(null);
+  if(ref.current){
+      ref.current.value = props.updateName;
+  }
 
   return (
     <Popover isOpen={isOpen} onClose={handleClose}>
       <PopoverTrigger>
-        <Card
-          onClick={handleClick}
-          boxShadow="lg"
-          width={props.width}
-          height="fit-content"
-          background="#9df9ef"
-        >
-          <CardHeader>
-            <Heading size="md">
-              <AddIcon marginRight="0.5rem" /> Add {props.addtype}
-            </Heading>
-          </CardHeader>
-        </Card>
+        <EditIcon onClick={handleClick} />
       </PopoverTrigger>
       <PopoverContent>
         <PopoverArrow />
         <PopoverCloseButton />
-        <PopoverHeader>Add New {props.addtype}</PopoverHeader>
+        <PopoverHeader>Update {props.updatetype}</PopoverHeader>
         <PopoverBody>
           <Input
             ref={ref}
             id="inputValue"
-            placeholder={`${props.addtype} Name`}
+            placeholder=""
             width="100%"
             autoComplete="off"
           />
@@ -63,14 +51,17 @@ function AddAnotherCard(props) {
           <Button
             colorScheme="blue"
             onClick={(event) => {
-              props.addCard(
-                ref.current.value ? ref.current.value : `New ${props.addtype}`
+              props.updateCard(
+                props.updateID,
+                ref.current.value
+                  ? ref.current.value
+                  : `New ${props.updatetype}`
               );
               ref.current.value = "";
               handleClose(event);
             }}
           >
-            Add
+            Update
           </Button>
         </PopoverFooter>
       </PopoverContent>
@@ -78,4 +69,4 @@ function AddAnotherCard(props) {
   );
 }
 
-export default AddAnotherCard;
+export default UpdateCard;

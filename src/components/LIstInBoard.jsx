@@ -5,6 +5,7 @@ import CardView from "./CardView";
 import AddAnotherCard from "./AddAnotherCard";
 import { createCard, getCardsInLists } from "../services/cardServices";
 import { Toast } from "./Toast";
+import UpdateCard from "./UpdateCard";
 
 function ListInBoard(props) {
   const [cardlist, setCardList] = useState([]);
@@ -60,10 +61,18 @@ function ListInBoard(props) {
         <CardHeader p="0">
           <Heading size="md">{props.listName}</Heading>
         </CardHeader>
-        <DeleteIcon
-          cursor="pointer"
-          onClick={() => props.deleteList(props.listId)}
-        />
+        <Flex gap="1rem">
+          <UpdateCard
+            updatetype="List"
+            updateName={props.listName}
+            updateCard={props.updateList}
+            updateID = {props.listId}
+          />
+          <DeleteIcon
+            cursor="pointer"
+            onClick={() => props.deleteList(props.listId)}
+          />
+        </Flex>
       </Flex>
       <Flex
         flexDirection="column"

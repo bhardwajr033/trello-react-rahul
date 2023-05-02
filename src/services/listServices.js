@@ -10,7 +10,7 @@ export async function getLists(boardId) {
     const res = await axios.get(
       `${baseURL}/1/boards/${boardId}/lists?key=${key}&token=${token}`
     );
-    return res.data.reduce((acc, list,) => {
+    return res.data.reduce((acc, list) => {
       acc.push({
         listName: list.name,
         listId: list.id,
@@ -21,7 +21,6 @@ export async function getLists(boardId) {
     return { error: err };
   }
 }
-
 
 export async function createList(listName, boardId) {
   try {
@@ -39,6 +38,19 @@ export async function createList(listName, boardId) {
     };
   } catch (err) {
     return { error: err };
+  }
+}
+
+export async function UpdateList(listId, listName) {
+  try {
+    const res = await axios.put(`${baseURL}/1/lists/${listId}/`, {
+      name: listName,
+      key: key,
+      token: token,
+    });
+    return res.status;
+  } catch (err) {
+    return 500;
   }
 }
 

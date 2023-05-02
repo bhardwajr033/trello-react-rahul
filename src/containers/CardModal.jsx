@@ -16,18 +16,20 @@ import {
 import { useEffect, useState } from "react";
 import CheckList from "../components/CheckList";
 import AddAnotherCard from "../components/AddAnotherCard";
-import { deleteCard } from "../services/cardServices";
+import { UpdateCardAPI, deleteCard } from "../services/cardServices";
 import {
   createCheckList,
   deleteCheckList,
   getCheckListsInCard,
 } from "../services/checkListServices";
 import { Toast } from "../components/Toast";
+import UpdateCard from "../components/UpdateCard";
 
 function CardModal(props) {
   const { isOpen, onOpen, onClose } = props;
 
   const [checkListDetails, setCheckListDetails] = useState([]);
+  const [cardName, setCardName] = useState(props.cardName);
 
   const toast = useToast();
 
@@ -39,8 +41,7 @@ function CardModal(props) {
     const res = await getCheckListsInCard(props.cardID);
     if (!res.error) {
       setCheckListDetails(res);
-    }
-    else{
+    } else {
       toast(Toast("Failed", "error", "Error while loading"));
     }
   }
@@ -52,6 +53,17 @@ function CardModal(props) {
       toast(Toast("Success", "success", `Created ${checklistName} Checklist`));
     } else {
       toast(Toast("Failed", "error", "Error while Creating Checklist"));
+    }
+  };
+
+  const handelUpdateCard = async (cardID, cardName) => {
+    const resStatus = await UpdateCardAPI(cardID, cardName);
+    if (resStatus === 200) {
+      setCardName(cardName);
+      props.isUpdate();
+      toast(Toast("Success", "success", `Updated Card`));
+    } else {
+      toast(Toast("Failed", "error", "Error while Updating"));
     }
   };
 
@@ -80,7 +92,7 @@ function CardModal(props) {
       <AccordionItem key={index} gap="1rem">
         <AccordionButton>
           <CheckList
-            cardID = {props.cardID}
+            cardID={props.cardID}
             checkListID={item.checkListId}
             checklistName={item.checkListName}
             deleteCheckList={handleDeleteCheckList}
@@ -94,7 +106,21 @@ function CardModal(props) {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent background="#d0bdf4">
-        <ModalHeader>Card Name</ModalHeader>
+        <ModalHeader>
+          <Flex
+            flexDirection="row"
+            justifyContent="space-between"
+            paddingRight="3rem"
+          >
+            {cardName}
+            <UpdateCard
+              updatetype="Card"
+              updateName={cardName}
+              updateCard={handelUpdateCard}
+              updateID={props.cardID}
+            />
+          </Flex>
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Flex flexDirection="column" gap="1rem" p="1rem">

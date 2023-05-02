@@ -3,7 +3,7 @@ import { Box, Flex, Heading, Spinner, useToast } from "@chakra-ui/react";
 import ListInBoard from "../components/LIstInBoard";
 import AddAnotherCard from "../components/AddAnotherCard";
 import { useParams } from "react-router-dom";
-import { createList, deleteList, getLists } from "../services/listServices";
+import { UpdateList, createList, deleteList, getLists } from "../services/listServices";
 import { getBoardDetails } from "../services/boardServices";
 import { Toast } from "../components/Toast";
 
@@ -57,6 +57,16 @@ function BoardPage() {
     }
   };
 
+  const updateList = async (listID,listName) => {
+    const resStatus = await UpdateList(listID,listName);
+    if (resStatus === 200) {
+      loadLists();
+      toast(Toast("Success", "success", `Updated List`));
+    } else {
+      toast(Toast("Failed", "error", "Error while Updating"));
+    }
+  };
+
   const handledeleteList = async (listId) => {
     const resStatus = await deleteList(listId);
     if (resStatus === 200) {
@@ -89,6 +99,7 @@ function BoardPage() {
         listName={list.listName}
         deleteList={handledeleteList}
         listId={list.listId}
+        updateList={updateList}
       />
     );
   });
