@@ -124,7 +124,7 @@ function CheckList(props) {
               marginTop="0.5rem"
               onClick={() => {
                 handleAddCheckItem(
-                  CheckItemRef.current.value ? CheckItemRef.current.value : ""
+                  CheckItemRef.current.value ? CheckItemRef.current.value : "New CheckItem"
                 );
                 CheckItemRef.current.value = "";
               }}
