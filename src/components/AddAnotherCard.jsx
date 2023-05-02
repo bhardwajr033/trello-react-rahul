@@ -61,7 +61,9 @@ function AddAnotherCard(props) {
           <Button
             colorScheme="blue"
             onClick={(event) => {
-              props.addCard(ref.current.value);
+              props.addCard(
+                ref.current.value ? ref.current.value : `New ${props.addtype}`
+              );
               handleClose(event);
             }}
           >

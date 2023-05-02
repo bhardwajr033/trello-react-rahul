@@ -33,7 +33,9 @@ function ListInBoard(props) {
         key={index}
         cardName={card.cardName}
         cardId={card.cardId}
-        isUpdate={loadCards()}
+        isUpdate={() => {
+          loadCards();
+        }}
       />
     );
   });
@@ -43,6 +45,7 @@ function ListInBoard(props) {
       boxShadow="lg"
       height="fit-content"
       minHeight="10rem"
+      maxHeight="60vh"
       width={{ base: "100%", md: "15rem" }}
     >
       <Flex justifyContent="space-between" p="1rem">
@@ -54,10 +57,10 @@ function ListInBoard(props) {
           onClick={() => props.deleteList(props.listId)}
         />
       </Flex>
-      <Flex flexDirection="column" px="0.5rem" py="1rem" gap="0.5rem">
+      <Flex flexDirection="column" px="0.5rem" py="1rem" gap="0.5rem" overflowX="scroll">
         {cards}
-        <AddAnotherCard width="100%" addtype="Card" addCard={handleAddCard} />
       </Flex>
+        <AddAnotherCard width="100%" addtype="Card" addCard={handleAddCard} />
     </Card>
   );
 }

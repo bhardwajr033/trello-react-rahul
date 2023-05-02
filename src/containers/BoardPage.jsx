@@ -1,23 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { Box, Flex, Heading, Spinner, useDisclosure } from "@chakra-ui/react";
+import { Box, Flex, Heading, Spinner, useToast } from "@chakra-ui/react";
 import ListInBoard from "../components/LIstInBoard";
 import AddAnotherCard from "../components/AddAnotherCard";
 import { useParams } from "react-router-dom";
 import { createList, deleteList, getLists } from "../services/listServices";
 import { getBoardDetails } from "../services/boardServices";
+import { Toast } from "../components/Toast";
 
 function BoardPage() {
   const boardId = useParams().id;
+  const toast = useToast();
 
   const [listItems, setListItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [boardDetails, setBoardDetails] = useState({
     boardName: "",
     backgroundImage: "",
   });
 
   useEffect(() => {
-    loadBoardDetails();
-    loadLists();
+    (async () => {
+      await loadBoardDetails();
+      await loadLists();
+      setIsLoading(false);
+    })();
   }, []);
 
   async function loadBoardDetails() {
@@ -40,12 +46,12 @@ function BoardPage() {
   }
 
   const handleAddList = async (listName) => {
-    if (!listName) {
-      listName = "new List";
-    }
     const list = await createList(listName, boardId);
     if (!list.error) {
       loadLists();
+      toast(Toast("Success", "success", `Created ${listName} List`));
+    } else {
+      toast(Toast("Failed", "error", list.error.message));
     }
   };
 
@@ -53,10 +59,13 @@ function BoardPage() {
     const resStatus = await deleteList(listId);
     if (resStatus === 200) {
       loadLists();
+      toast(Toast("Success", "success", `Deleted ${listName} List`));
+    } else {
+      toast(Toast("Failed", "error", "Error while Deleting"));
     }
   };
 
-  if (listItems.length === 0) {
+  if (isLoading) {
     return (
       <Flex align="center" justify="center" h="100vh">
         <Spinner

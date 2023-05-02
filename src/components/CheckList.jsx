@@ -1,7 +1,7 @@
 import { CheckIcon, DeleteIcon } from "@chakra-ui/icons";
 import { AccordionPanel, Flex, Heading, Input } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
-import CheckBox from "./CheckItems";
+import CheckItem from "./CheckItems";
 import {
   getCheckItemsInCheckList,
   createCheckItem,
@@ -38,7 +38,7 @@ function CheckList(props) {
 
   const checkitems = checkItemDetails.map((item, index) => {
     return (
-      <CheckBox
+      <CheckItem
         key={index}
         checkBoxName={item.checkItemName}
         checkItemID={item.checkItemId}

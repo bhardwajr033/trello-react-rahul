@@ -1,11 +1,22 @@
-import { Box, Flex, Spinner, Wrap } from "@chakra-ui/react";
+import { Box, Flex, Spinner, Wrap, useToast } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import Board from "../components/Board";
 import CreateBoard from "../components/CreateBoard";
 import { createBoard, getBoards } from "../services/boardServices";
+import { Toast } from "../components/Toast";
 
 function BoardContainer() {
   const [boardDetails, setBoardDetails] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const toast = useToast();
+
+  useEffect(() => {
+    (async () => {
+      await getBoardDetails();
+      setIsLoading(false);
+    })();
+  }, []);
 
   async function getBoardDetails() {
     const boardData = await getBoards();
@@ -14,10 +25,6 @@ function BoardContainer() {
     }
     setBoardDetails(boardData);
   }
-
-  useEffect(() => {
-    getBoardDetails();
-  }, []);
 
   const handleCreateBoard = async (newBoardName, newBoardBackground) => {
     if (!newBoardName) {
@@ -29,10 +36,13 @@ function BoardContainer() {
     const newBoard = await createBoard(newBoardName, newBoardBackground);
     if (!newBoard.error) {
       getBoardDetails();
+      toast(Toast("Success", "success", `Created ${newBoardName} Board`));
+    }else {
+      toast(Toast("Failed", "error", list.error.message));
     }
   };
 
-  if (boardDetails.length === 0) {
+  if (isLoading) {
     return (
       <Flex align="center" justify="center" h="100vh">
         <Spinner

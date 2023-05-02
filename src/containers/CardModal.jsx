@@ -55,7 +55,7 @@ function CardModal(props) {
   async function handledeleteCard() {
     const resStatus = await deleteCard(props.cardID);
     if (resStatus === 200) {
-      props.isUpdate;
+      props.isUpdate();
     } else {
       console.log("failed");
     }
