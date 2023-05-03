@@ -38,6 +38,7 @@ function AddAnotherCard(props) {
           width={props.width}
           height="fit-content"
           background="#9df9ef"
+          cursor="pointer"
         >
           <CardHeader>
             <Heading size="md">
@@ -57,6 +58,15 @@ function AddAnotherCard(props) {
             placeholder={`${props.addtype} Name`}
             width="100%"
             autoComplete="off"
+            onKeyUp={(event) => {
+              if (event.key === "Enter") {
+                props.addCard(
+                  ref.current.value ? ref.current.value : `New ${props.addtype}`
+                );
+                ref.current.value = "";
+                handleClose(event);
+              }
+            }}
           />
         </PopoverBody>
         <PopoverFooter>

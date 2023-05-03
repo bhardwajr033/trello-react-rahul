@@ -1,4 +1,4 @@
-import {  EditIcon } from "@chakra-ui/icons";
+import { EditIcon } from "@chakra-ui/icons";
 import {
   Button,
   Input,
@@ -25,14 +25,14 @@ function UpdateCard(props) {
   }
 
   const ref = useRef(null);
-  if(ref.current){
-      ref.current.value = props.updateName;
+  if (ref.current) {
+    ref.current.value = props.updateName;
   }
 
   return (
     <Popover isOpen={isOpen} onClose={handleClose}>
       <PopoverTrigger>
-        <EditIcon onClick={handleClick} />
+        <EditIcon cursor="pointer" onClick={handleClick} />
       </PopoverTrigger>
       <PopoverContent>
         <PopoverArrow />
@@ -42,9 +42,21 @@ function UpdateCard(props) {
           <Input
             ref={ref}
             id="inputValue"
-            placeholder=""
+            placeholder={`${props.updatetype} Name`}
             width="100%"
             autoComplete="off"
+            onKeyUp={(event) => {
+              if (event.key === "Enter") {
+                props.updateCard(
+                  props.updateID,
+                  ref.current.value
+                    ? ref.current.value
+                    : `New ${props.updatetype}`
+                );
+                ref.current.value = "";
+                handleClose(event);
+              }
+            }}
           />
         </PopoverBody>
         <PopoverFooter>

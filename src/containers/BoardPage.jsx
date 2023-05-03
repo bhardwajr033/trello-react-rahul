@@ -1,28 +1,61 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { Box, Flex, Heading, Spinner, useToast } from "@chakra-ui/react";
 import ListInBoard from "../components/LIstInBoard";
 import AddAnotherCard from "../components/AddAnotherCard";
 import { useParams } from "react-router-dom";
-import { UpdateList, createList, deleteList, getLists } from "../services/listServices";
+import {
+  UpdateList,
+  createList,
+  deleteList,
+  getLists,
+} from "../services/listServices";
 import { getBoardDetails } from "../services/boardServices";
 import { Toast } from "../components/Toast";
+
+const reducerActions = {
+  PageLoaded: "PageLoded",
+  PageUpdated: "PageUpdated",
+  ListUpdated: "ListUpdated",
+};
+
+const initialState = {
+  boardName: "",
+  backgroundImage: "",
+  isLoading: true,
+  listItems: [],
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case reducerActions.PageLoaded:
+      return { ...state, isLoading: false };
+    case reducerActions.PageUpdated:
+      return {
+        ...state,
+        boardName: action.payload.boardName,
+        backgroundImage: action.payload.backgroundImage,
+      };
+    case reducerActions.ListUpdated:
+      return {
+        ...state,
+        listItems: action.payload.listItems,
+      };
+    default:
+      console.log("Error");
+  }
+}
 
 function BoardPage() {
   const boardId = useParams().id;
   const toast = useToast();
 
-  const [listItems, setListItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [boardDetails, setBoardDetails] = useState({
-    boardName: "",
-    backgroundImage: "",
-  });
+  const [boardState, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     (async () => {
       await loadBoardDetails();
       await loadLists();
-      setIsLoading(false);
+      dispatch({ type: reducerActions.PageLoaded });
     })();
   }, []);
 
@@ -32,9 +65,12 @@ function BoardPage() {
       toast(Toast("Failed", "error", "Error while loading"));
       return;
     }
-    setBoardDetails({
-      boardName: boardDetails.name,
-      backgroundImage: boardDetails.backgroundImg,
+    dispatch({
+      type: reducerActions.PageUpdated,
+      payload: {
+        boardName: boardDetails.name,
+        backgroundImage: boardDetails.backgroundImg,
+      },
     });
   }
 
@@ -44,7 +80,10 @@ function BoardPage() {
       toast(Toast("Failed", "error", "Error while loading"));
       return;
     }
-    setListItems(ListData);
+    dispatch({
+      type: reducerActions.ListUpdated,
+      payload: { listItems: ListData },
+    });
   }
 
   const handleAddList = async (listName) => {
@@ -57,8 +96,8 @@ function BoardPage() {
     }
   };
 
-  const updateList = async (listID,listName) => {
-    const resStatus = await UpdateList(listID,listName);
+  const updateList = async (listID, listName) => {
+    const resStatus = await UpdateList(listID, listName);
     if (resStatus === 200) {
       loadLists();
       toast(Toast("Success", "success", `Updated List`));
@@ -77,7 +116,7 @@ function BoardPage() {
     }
   };
 
-  if (isLoading) {
+  if (boardState.isLoading) {
     return (
       <Flex align="center" justify="center" h="100vh">
         <Spinner
@@ -91,7 +130,7 @@ function BoardPage() {
     );
   }
 
-  const lists = listItems.map((list, index) => {
+  const lists = boardState.listItems.map((list, index) => {
     return (
       <ListInBoard
         index={index}
@@ -109,10 +148,10 @@ function BoardPage() {
       width="fit-content"
       minWidth="100vw"
       minHeight="97vh"
-      backgroundImage={boardDetails.backgroundImage}
+      backgroundImage={boardState.backgroundImage}
     >
       <Box position="fixed" top="4.5rem" left="1rem" zIndex="1" width="100%">
-        <Heading p="1rem">{boardDetails.boardName}</Heading>
+        <Heading p="1rem">{boardState.boardName}</Heading>
       </Box>
       <Flex
         flexDirection={{ base: "column", md: "row" }}
