@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 function Board(props) {
   const navigate = useNavigate();
   const openBoard = (event) => {
-    navigate(`/board/${props.boardId}`);
+    navigate(`/home/board/${props.boardId}`);
   };
   return (
     <Card

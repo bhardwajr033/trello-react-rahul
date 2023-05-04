@@ -4,12 +4,23 @@ import Board from "../components/Board";
 import CreateBoard from "../components/CreateBoard";
 import { createBoard, getBoards } from "../services/boardServices";
 import { Toast } from "../components/Toast";
+import { useNavigate } from "react-router-dom";
 
 function BoardContainer() {
   const [boardDetails, setBoardDetails] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const toast = useToast();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("trello-react-rahul-user"));
+    if (!user) {
+      toast(Toast("Cant Verify", "error", "Please login"));
+      navigate("/logIn");
+    }
+  }, [navigate]);
 
   useEffect(() => {
     (async () => {
@@ -38,7 +49,7 @@ function BoardContainer() {
     if (!newBoard.error) {
       getBoardDetails();
       toast(Toast("Success", "success", `Created ${newBoardName} Board`));
-    }else {
+    } else {
       toast(Toast("Failed", "error", list.error.message));
     }
   };

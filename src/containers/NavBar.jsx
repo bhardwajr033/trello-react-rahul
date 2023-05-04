@@ -1,8 +1,42 @@
-import { Button, Text, Box, Flex, Image } from "@chakra-ui/react";
-import { Link, Outlet, useParams } from "react-router-dom";
+import {
+  Button,
+  Text,
+  Box,
+  Flex,
+  Image,
+  Portal,
+  Heading,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverHeader,
+  PopoverBody,
+  PopoverFooter,
+  PopoverArrow,
+  PopoverCloseButton,
+  useToast,
+} from "@chakra-ui/react";
+import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
+
+import { auth } from "../config/firebase";
+import { Toast } from "../components/Toast";
 
 export const NavBar = () => {
   const boardId = useParams().id;
+
+  const toast = useToast();
+
+  const navigate = useNavigate();
+
+  const user = JSON.parse(localStorage.getItem("trello-react-rahul-user"));
+
+  const handelLogOut = (event) => {
+    event.preventDefault();
+    auth.signOut();
+    localStorage.removeItem("trello-react-rahul-user");
+    toast(Toast("Success", "success", "Succesfully loged out"));
+    navigate("/login");
+  };
 
   return (
     <>
@@ -35,15 +69,36 @@ export const NavBar = () => {
             height={{ base: "25px", md: "30px" }}
             src="https://a.trellocdn.com/prgb/assets/87e1af770a49ce8e84e3.gif"
           />
-          <Text
-            background="ButtonFace"
-            px="0.5rem"
-            py={{ base: "0.2rem", md: "0.5rem" }}
-            border="1px solid teal"
-            borderRadius="5px"
-          >
-            User
-          </Text>
+          <Popover>
+            <PopoverTrigger>
+              <Button
+                background="ButtonFace"
+                colorScheme="teal"
+                size={{ base: "sm", md: "md" }}
+                variant="outline"
+                p="1rem"
+              >
+                {user ? user.name : "user"}
+              </Button>
+            </PopoverTrigger>
+            <Portal>
+              <PopoverContent>
+                <PopoverArrow />
+                <PopoverHeader>
+                  <Heading color="teal">{user ? user.name : "user"}</Heading>
+                </PopoverHeader>
+                <PopoverCloseButton />
+                <PopoverBody>
+                  <Text color="voilet">email : {user ? user.email : ""}</Text>
+                </PopoverBody>
+                <PopoverFooter>
+                  <Button colorScheme="blue" onClick={handelLogOut}>
+                    Log Out
+                  </Button>
+                </PopoverFooter>
+              </PopoverContent>
+            </Portal>
+          </Popover>
         </Flex>
       </Box>
       <Outlet />

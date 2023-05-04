@@ -2,7 +2,7 @@ import React, { useEffect, useReducer, useState } from "react";
 import { Box, Flex, Heading, Spinner, useToast } from "@chakra-ui/react";
 import ListInBoard from "../components/LIstInBoard";
 import AddAnotherCard from "../components/AddAnotherCard";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   UpdateList,
   createList,
@@ -51,6 +51,16 @@ function BoardPage() {
 
   const [boardState, dispatch] = useReducer(reducer, initialState);
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("trello-react-rahul-user"));
+    if (!user) {
+      toast(Toast("Cant Verify", "error", "Please login"));
+      navigate("/logIn");
+    }
+  }, [navigate]);
+
   useEffect(() => {
     (async () => {
       await loadBoardDetails();
@@ -78,6 +88,7 @@ function BoardPage() {
     const ListData = await getLists(boardId);
     if (ListData.error) {
       toast(Toast("Failed", "error", "Error while loading"));
+      navigate("/home");
       return;
     }
     dispatch({
