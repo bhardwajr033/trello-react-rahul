@@ -2,7 +2,6 @@ import { useEffect, useReducer } from "react";
 import {
   Flex,
   Heading,
-  Input,
   Button,
   InputGroup,
   Stack,
@@ -23,6 +22,7 @@ import {
 } from "firebase/auth";
 import { Toast } from "../components/Toast";
 import { useNavigate } from "react-router-dom";
+import ControlledInput from "../components/ControlledInput";
 
 const reducerActions = {
   nameUpdated: "nameUpdated",
@@ -80,6 +80,8 @@ function SignInUpPage(props) {
   const toast = useToast();
 
   const navigate = useNavigate();
+
+  const isLoginPage = props.signInUp === "Log In";
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("trello-react-rahul-user"));
@@ -219,7 +221,7 @@ function SignInUpPage(props) {
           <form
             onSubmit={(event) => {
               event.preventDefault();
-              if (props.signInUp === "Log In") {
+              if (isLoginPage) {
                 handleLogIn();
               } else {
                 handleSignUp();
@@ -232,70 +234,66 @@ function SignInUpPage(props) {
               backgroundColor="whiteAlpha.900"
               boxShadow="md"
             >
-              <FormControl
-                display={props.signInUp === "Log In" ? "none" : "block"}
-              >
+              <FormControl display={isLoginPage ? "none" : "block"}>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none" />
-                  <Input
-                    {...(props.signInUp === "Log In" ? {} : { required: true })}
+                  <ControlledInput
+                    required={isLoginPage ? false : true}
                     value={PageState.name}
-                    onChange={({ target }) =>
+                    handleOnChange={(target) => {
                       dispatch({
                         type: reducerActions.nameUpdated,
                         payload: { name: target.value },
-                      })
-                    }
+                      });
+                    }}
                     type="text"
                     placeholder="Name"
                     border={
                       PageState.nameError ? "1px solid red" : "1px solid teal"
                     }
-                    disabled={PageState.isInputDisabled}
+                    isInputDisabled={PageState.isInputDisabled}
                   />
                 </InputGroup>
               </FormControl>
               <FormControl>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none" />
-                  <Input
-                    required
+                  <ControlledInput
+                    required={true}
                     value={PageState.email}
-                    onChange={({ target }) =>
+                    handleOnChange={(target) => {
                       dispatch({
                         type: reducerActions.emailUpdated,
                         payload: { email: target.value },
-                      })
-                    }
+                      });
+                    }}
                     type="email"
                     placeholder="email address"
                     border={
                       PageState.emailError ? "1px solid red" : "1px solid teal"
                     }
-                    disabled={PageState.isInputDisabled}
+                    isInputDisabled={PageState.isInputDisabled}
                   />
                 </InputGroup>
               </FormControl>
               <FormControl>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none" color="gray.300" />
-                  <Input
-                    required
+                  <ControlledInput
+                    required={true}
                     value={PageState.password}
-                    onChange={({ target }) =>
+                    handleOnChange={(target) => {
                       dispatch({
                         type: reducerActions.passwordUpdated,
                         payload: { password: target.value },
-                      })
-                    }
-                    type={PageState.showPassword ? "text" : "password"}
-                    placeholder="Password"
+                      });
+                    }}
+                    type="password"
+                    placeholder="password"
                     border={
-                      PageState.passwordError
-                        ? "1px solid red"
-                        : "1px solid teal"
+                      PageState.emailError ? "1px solid red" : "1px solid teal"
                     }
-                    disabled={PageState.isInputDisabled}
+                    isInputDisabled={PageState.isInputDisabled}
                   />
                   <InputRightElement width="4.5rem">
                     <Button
@@ -327,12 +325,9 @@ function SignInUpPage(props) {
         </Box>
       </Stack>
       <Box>
-        {props.signInUp === "Log In" ? "New to us?" : "Already Signed Up ?"}{" "}
-        <Link
-          color="teal.500"
-          href={props.signInUp === "Log In" ? "/signUp" : "/logIn"}
-        >
-          {props.signInUp === "Log In" ? "Sign Up" : "Log In"}
+        {isLoginPage ? "New to us?" : "Already Signed Up ?"}{" "}
+        <Link color="teal.500" href={isLoginPage ? "/signUp" : "/logIn"}>
+          {isLoginPage ? "Sign Up" : "Log In"}
         </Link>
       </Box>
     </Flex>

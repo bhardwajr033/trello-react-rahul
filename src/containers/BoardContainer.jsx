@@ -47,7 +47,7 @@ function BoardContainer() {
     }
     const newBoard = await createBoard(newBoardName, newBoardBackground);
     if (!newBoard.error) {
-      getBoardDetails();
+      setBoardDetails([...boardDetails,newBoard])
       toast(Toast("Success", "success", `Created ${newBoardName} Board`));
     } else {
       toast(Toast("Failed", "error", list.error.message));
