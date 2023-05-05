@@ -288,7 +288,7 @@ function SignInUpPage(props) {
                         payload: { password: target.value },
                       });
                     }}
-                    type="password"
+                    type={PageState.showPassword ? "text" : "password"}
                     placeholder="password"
                     border={
                       PageState.emailError ? "1px solid red" : "1px solid teal"
