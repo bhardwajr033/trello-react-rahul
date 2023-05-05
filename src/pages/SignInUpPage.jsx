@@ -166,7 +166,7 @@ function SignInUpPage(props) {
         Toast(
           "Success",
           "success",
-          `Log In Succesfull ,${PageState.name} , Please Wait`
+          `Log In Succesfull , ${response.user.displayName} , Please Wait`
         )
       );
       localStorage.setItem(
