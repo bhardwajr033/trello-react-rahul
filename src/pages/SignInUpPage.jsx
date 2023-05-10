@@ -12,6 +12,7 @@ import {
   FormControl,
   InputRightElement,
   useToast,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 
 import { auth } from "../config/firebase";
@@ -276,7 +277,7 @@ function SignInUpPage(props) {
                   />
                 </InputGroup>
               </FormControl>
-              <FormControl>
+              <FormControl isInvalid={PageState.passwordError}>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none" color="gray.300" />
                   <ControlledInput
@@ -309,6 +310,11 @@ function SignInUpPage(props) {
                     </Button>
                   </InputRightElement>
                 </InputGroup>
+                <FormErrorMessage>
+                  {PageState.passwordError
+                    ? "Password length should be atleast 8 characters"
+                    : ""}
+                </FormErrorMessage>
               </FormControl>
               <Button
                 borderRadius={0}
