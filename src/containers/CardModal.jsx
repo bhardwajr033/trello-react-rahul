@@ -47,12 +47,25 @@ function CardModal(props) {
   }
 
   const handleAddCheckList = async (checklistName) => {
-    const resStatus = await createCheckList(props.cardID, checklistName);
-    if (resStatus === 200) {
-      loadCheckList();
+    const resDetail = await createCheckList(props.cardID, checklistName);
+    if (!resDetail.error) {
+      setCheckListDetails([...checkListDetails, resDetail]);
       toast(Toast("Success", "success", `Created ${checklistName} Checklist`));
     } else {
       toast(Toast("Failed", "error", "Error while Creating Checklist"));
+    }
+  };
+
+  const handleDeleteCheckList = async (checkListID) => {
+    const resStatus = await deleteCheckList(checkListID);
+    if (resStatus === 200) {
+      const newCheckListDetails = checkListDetails.filter(
+        (checkList) => checkList.checkListId !== checkListID
+      );
+      setCheckListDetails(newCheckListDetails);
+      toast(Toast("Success", "success", `Deleted  Checklist`));
+    } else {
+      toast(Toast("Failed", "error", "Error while Deleting Checklist"));
     }
   };
 
@@ -64,16 +77,6 @@ function CardModal(props) {
       toast(Toast("Success", "success", `Updated Card`));
     } else {
       toast(Toast("Failed", "error", "Error while Updating"));
-    }
-  };
-
-  const handleDeleteCheckList = async (checkListID) => {
-    const resStatus = await deleteCheckList(checkListID);
-    if (resStatus === 200) {
-      loadCheckList();
-      toast(Toast("Success", "success", `Deleted  Checklist`));
-    } else {
-      toast(Toast("Failed", "error", "Error while Deleting Checklist"));
     }
   };
 

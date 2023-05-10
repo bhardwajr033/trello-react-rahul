@@ -31,9 +31,12 @@ export async function createCheckList(cardId, checkListName) {
       key: key,
       token: token,
     });
-    return res.status;
+    return {
+      checkListName: res.data.name,
+      checkListId: res.data.id,
+    };
   } catch (err) {
-    return 500;
+    return {error : err};
   }
 }
 

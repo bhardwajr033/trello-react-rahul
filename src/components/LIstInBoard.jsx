@@ -26,9 +26,9 @@ function ListInBoard(props) {
   }
 
   const handleAddCard = async (cardName) => {
-    const resStatus = await createCard(props.listId, cardName);
-    if (resStatus === 200) {
-      loadCards();
+    const cardDetail = await createCard(props.listId, cardName);
+    if (!cardDetail.error) {
+      setCardList([...cardlist, cardDetail]);
       toast(Toast("Success", "success", `Created ${cardName} Card`));
     } else {
       toast(Toast("Failed", "error", "Error while Creating Card"));
@@ -66,7 +66,7 @@ function ListInBoard(props) {
             updatetype="List"
             updateName={props.listName}
             updateCard={props.updateList}
-            updateID = {props.listId}
+            updateID={props.listId}
           />
           <DeleteIcon
             cursor="pointer"

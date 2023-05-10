@@ -31,9 +31,12 @@ export async function createCard(listId, cardName) {
       key: key,
       token: token,
     });
-    return res.status;
+    return {
+      cardName: res.data.name,
+      cardId: res.data.id,
+    };
   } catch (err) {
-    return 500;
+    return { error: err };
   }
 }
 

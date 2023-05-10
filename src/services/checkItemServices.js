@@ -14,7 +14,7 @@ export async function getCheckItemsInCheckList(checkListId) {
       acc.push({
         checkItemName: checkitem.name,
         checkItemId: checkitem.id,
-        state : checkitem.state
+        state: checkitem.state,
       });
       return acc;
     }, []);
@@ -34,9 +34,13 @@ export async function createCheckItem(checkListId, checkItemName) {
         token: token,
       }
     );
-    return res.status;
+    return {
+      checkItemName: res.data.name,
+      checkItemId: res.data.id,
+      state: res.data.state,
+    };
   } catch (err) {
-    return 500;
+    return { error: err };
   }
 }
 

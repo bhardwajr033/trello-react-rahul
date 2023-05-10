@@ -38,9 +38,12 @@ function CheckList(props) {
   }
 
   const handleAddCheckItem = async (checkItemName) => {
-    const resStatus = await createCheckItem(props.checkListID, checkItemName);
-    if (resStatus === 200) {
-      loadCheckItems();
+    const rescheckItemDetail = await createCheckItem(
+      props.checkListID,
+      checkItemName
+    );
+    if (!rescheckItemDetail.error) {
+      setCheckItemDetails([...checkItemDetails, rescheckItemDetail]);
       toast(Toast("Success", "success", `Created ${checkItemName} CheckItem`));
     } else {
       toast(Toast("Failed", "error", "Error while Creating CheckItem"));
@@ -50,7 +53,10 @@ function CheckList(props) {
   const handleDeleteCheckItem = async (checkItemID) => {
     const resStatus = await deleteCheckItem(props.checkListID, checkItemID);
     if (resStatus === 200) {
-      loadCheckItems();
+      const newCheckItemDetails = checkItemDetails.filter(
+        (checkItem) => checkItem.checkItemId !== checkItemID
+      );
+      setCheckItemDetails(newCheckItemDetails);
       toast(Toast("Success", "success", `Deleted  CheckItem`));
     } else {
       toast(Toast("Failed", "error", "Error while Deleting CheckItem"));
@@ -65,7 +71,18 @@ function CheckList(props) {
       stateBoolean ? "incomplete" : "complete"
     );
     if (resStatus === 200) {
-      loadCheckItems();
+      const newCheckItemDetails = checkItemDetails.reduce((acc, checkitem) => {
+        if (checkitem.checkItemId === checkItemID) {
+          acc.push({
+            ...checkitem,
+            state: stateBoolean ? "incomplete" : "complete",
+          });
+        } else {
+          acc.push(checkitem);
+        }
+        return acc;
+      }, []);
+      setCheckItemDetails(newCheckItemDetails);
       toast(
         Toast(
           "Success",
@@ -119,12 +136,27 @@ function CheckList(props) {
       <AccordionPanel>
         <Flex flexDirection="column" width="100%" gap="0.5rem">
           <Flex flexDirection="row" gap="1rem">
-            <Input ref={CheckItemRef} placeholder="Add Checkitem" />
+            <Input
+              ref={CheckItemRef}
+              placeholder="Add Checkitem"
+              onKeyUp={(event) => {
+                if (event.key === "Enter") {
+                  handleAddCheckItem(
+                    CheckItemRef.current.value
+                      ? CheckItemRef.current.value
+                      : "New CheckItem"
+                  );
+                  CheckItemRef.current.value = "";
+                }
+              }}
+            />
             <CheckIcon
               marginTop="0.5rem"
               onClick={() => {
                 handleAddCheckItem(
-                  CheckItemRef.current.value ? CheckItemRef.current.value : "New CheckItem"
+                  CheckItemRef.current.value
+                    ? CheckItemRef.current.value
+                    : "New CheckItem"
                 );
                 CheckItemRef.current.value = "";
               }}

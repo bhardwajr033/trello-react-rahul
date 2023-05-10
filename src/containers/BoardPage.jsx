@@ -15,7 +15,10 @@ import { Toast } from "../components/Toast";
 const reducerActions = {
   PageLoaded: "PageLoded",
   PageUpdated: "PageUpdated",
+  ListLoded: "ListLoded",
+  ListAdded: "ListAdded",
   ListUpdated: "ListUpdated",
+  ListDeleted: "ListDeleted",
 };
 
 const initialState = {
@@ -35,10 +38,36 @@ function reducer(state, action) {
         boardName: action.payload.boardName,
         backgroundImage: action.payload.backgroundImage,
       };
-    case reducerActions.ListUpdated:
+    case reducerActions.ListLoded:
       return {
         ...state,
         listItems: action.payload.listItems,
+      };
+    case reducerActions.ListAdded:
+      return {
+        ...state,
+        listItems: [...state.listItems, action.payload.listItems],
+      };
+    case reducerActions.ListUpdated:
+      const newListItems = state.listItems.reduce((acc, item) => {
+        if (item.listId === action.payload.listId) {
+          acc.push({ ...item, listName: action.payload.listName });
+        } else {
+          acc.push(item);
+        }
+        return acc;
+      }, []);
+      return {
+        ...state,
+        listItems: newListItems,
+      };
+    case reducerActions.ListDeleted:
+      const newListItems2 = state.listItems.filter(
+        (item) => item.listId !== action.payload.listId
+      );
+      return {
+        ...state,
+        listItems: newListItems2,
       };
     default:
       console.log("Error");
@@ -92,25 +121,31 @@ function BoardPage() {
       return;
     }
     dispatch({
-      type: reducerActions.ListUpdated,
+      type: reducerActions.ListLoded,
       payload: { listItems: ListData },
     });
   }
 
   const handleAddList = async (listName) => {
-    const list = await createList(listName, boardId);
-    if (!list.error) {
-      loadLists();
+    const ListData = await createList(listName, boardId);
+    if (!ListData.error) {
+      dispatch({
+        type: reducerActions.ListAdded,
+        payload: { listItems: ListData },
+      });
       toast(Toast("Success", "success", `Created ${listName} List`));
     } else {
       toast(Toast("Failed", "error", list.error.message));
     }
   };
 
-  const updateList = async (listID, listName) => {
-    const resStatus = await UpdateList(listID, listName);
+  const updateList = async (listId, listName) => {
+    const resStatus = await UpdateList(listId, listName);
     if (resStatus === 200) {
-      loadLists();
+      dispatch({
+        type: reducerActions.ListUpdated,
+        payload: { listId: listId, listName: listName },
+      });
       toast(Toast("Success", "success", `Updated List`));
     } else {
       toast(Toast("Failed", "error", "Error while Updating"));
@@ -120,7 +155,10 @@ function BoardPage() {
   const handledeleteList = async (listId) => {
     const resStatus = await deleteList(listId);
     if (resStatus === 200) {
-      loadLists();
+      dispatch({
+        type: reducerActions.ListDeleted,
+        payload: { listId: listId },
+      });
       toast(Toast("Success", "success", `Deleted List`));
     } else {
       toast(Toast("Failed", "error", "Error while Deleting"));
